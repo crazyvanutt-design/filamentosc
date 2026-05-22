@@ -578,10 +578,7 @@
 
     <div class="vitrine-grid" id="vitrineGrid"></div>
 
-    <div class="vitrine-footer">
-      <button class="btn btn-ghost" onclick="irParaEtapa(3)">← Editar catálogo</button>
-      <button class="btn btn-ghost" onclick="novoUpload()">↑ Carregar novo PDF</button>
-    </div>
+
   </div>
 
 </div>
@@ -635,6 +632,9 @@ function irParaEtapa(n) {
       document.getElementById(`line${i}`).className = i < n ? 'step-line done' : 'step-line';
     }
   });
+
+  // Oculta stepper na vitrine do cliente
+  document.getElementById('stepper').style.display = n === 4 ? 'none' : 'flex';
 
   if (n === 3) renderizarRevisao();
   if (n === 4) renderizarVitrine();
