@@ -570,10 +570,8 @@
   <!-- ══════════════ ETAPA 4 — VITRINE ══════════════ -->
   <div class="panel" id="panel4">
     <div class="vitrine-header">
-      <h2>🎉 Catálogo publicado!</h2>
-      <span class="tag-instrucao" style="background:rgba(34,208,122,0.1); border-color:rgba(34,208,122,0.3); color:var(--success);">
-        ✦ Visão do cliente
-      </span>
+      <h2>Filamentos disponíveis</h2>
+      <button class="btn btn-ghost" style="font-size:0.75rem; padding:5px 12px; opacity:0.35;" onclick="acessarAdmin()" title="Área administrativa">⚙ Admin</button>
     </div>
 
     <div class="vitrine-grid" id="vitrineGrid"></div>
@@ -638,6 +636,22 @@ function irParaEtapa(n) {
 
   if (n === 3) renderizarRevisao();
   if (n === 4) renderizarVitrine();
+}
+
+function acessarAdmin() {
+  const senha = prompt('Senha de administrador:');
+  if (senha === null) return; // cancelou
+  if (senha === 'admin') {
+    // Se já tem catálogo salvo, carrega na sessão para edição
+    produtosSessao = produtosCatalogo.map(p => ({ ...p }));
+    if (produtosSessao.length > 0) {
+      irParaEtapa(3);
+    } else {
+      irParaEtapa(1);
+    }
+  } else {
+    toast('Senha incorreta.', 'error');
+  }
 }
 
 function novoUpload() {
