@@ -1174,38 +1174,32 @@ async function publicarCatalogo() {
   }
 
   produtosCatalogo = produtosSessao.map(p => ({ ...p }));
-
-  // Salva localmente sempre
   localStorage.setItem('catalogo_fil_v3', JSON.stringify(produtosCatalogo));
 
-  // Tenta salvar no JSONBin se configurado
-  const apiKey = localStorage.getItem('jsonbin_api_key');
-  const binId  = localStorage.getItem('jsonbin_bin_id');
+  const btn = document.querySelector('.btn-success.btn-lg');
+  btn.textContent = '⏳ Publicando na nuvem...';
+  btn.disabled = true;
 
-  if (apiKey && binId) {
-    const btn = document.querySelector('.btn-success.btn-lg');
-    btn.textContent = '⏳ Publicando na nuvem...';
-    btn.disabled = true;
-    try {
-      const res = await fetch(`${JSONBIN_BASE}/${binId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
-        body: JSON.stringify({ produtos: produtosCatalogo })
-      });
-      if (res.ok) {
-        toast('✓ Catálogo publicado na nuvem! Clientes já podem ver.');
-      } else {
-        toast('Salvo localmente. Verifique a API Key do JSONBin.', 'error');
-      }
-    } catch(e) {
-      toast('Sem internet. Salvo apenas localmente.', 'error');
+  try {
+    const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+      body: JSON.stringify({ produtos: produtosCatalogo })
+    });
+    if (res.ok) {
+      toast('✓ Catálogo publicado na nuvem!');
+    } else {
+      const err = await res.json();
+      console.error('JSONBin erro:', err);
+      toast('Erro ao publicar na nuvem: ' + (err.message || res.status), 'error');
     }
-    btn.textContent = '✓ Salvar e Publicar Catálogo';
-    btn.disabled = false;
-  } else {
-    toast('✓ Salvo localmente. Configure o JSONBin para compartilhar.');
+  } catch(e) {
+    console.error(e);
+    toast('Sem internet. Salvo apenas localmente.', 'error');
   }
 
+  btn.textContent = '✓ Salvar e Publicar Catálogo';
+  btn.disabled = false;
   irParaEtapa(4);
 }
 
