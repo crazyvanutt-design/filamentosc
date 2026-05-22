@@ -653,9 +653,8 @@ let carrinhoCliente = {};
 let coordenadasPorPagina = {};
 
 // ── Configuração JSONBin ──
-// Preencha após criar conta em jsonbin.io
-const JSONBIN_API_KEY = localStorage.getItem('jsonbin_api_key') || '';
-const JSONBIN_BIN_ID  = localStorage.getItem('jsonbin_bin_id')  || '';
+const JSONBIN_API_KEY = localStorage.getItem('jsonbin_api_key') || '$2a$10$Pzap.mBIZt22YaBI5AKLjOo7AlBO/jf.U4mB9ImTCcwrNCOqFILDK';
+const JSONBIN_BIN_ID  = '6a10e4c76877513b27b91911';
 const JSONBIN_BASE    = 'https://api.jsonbin.io/v3/b';
 
 // ── Utilitários ──
@@ -830,25 +829,20 @@ function novoUpload() {
 
 // ── ETAPA 1 — Carregamento inicial ──
 window.onload = async function() {
-  // Tenta carregar do JSONBin primeiro
-  if (JSONBIN_API_KEY && JSONBIN_BIN_ID) {
-    try {
-      mostrarLoadingVitrine(true);
-      const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, {
-        headers: { 'X-Master-Key': JSONBIN_API_KEY }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        produtosCatalogo = data.record.produtos || [];
-        if (produtosCatalogo.length > 0) {
-          mostrarLoadingVitrine(false);
-          irParaEtapa(4);
-          return;
-        }
-      }
-    } catch(e) { console.warn('JSONBin indisponível, usando localStorage.'); }
-    mostrarLoadingVitrine(false);
-  }
+  // Sempre tenta carregar do JSONBin (leitura usa X-Access-Key ou master key)
+  try {
+    mostrarLoadingVitrine(true);
+    const headers = { 'X-Bin-Meta': 'false', 'X-Master-Key': JSONBIN_API_KEY };
+
+    const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      produtosCatalogo = (data.record && data.record.produtos) ? data.record.produtos : [];
+      mostrarLoadingVitrine(false);
+      if (produtosCatalogo.length > 0) { irParaEtapa(4); return; }
+    }
+  } catch(e) { console.warn('JSONBin indisponível, usando localStorage.'); }
+  mostrarLoadingVitrine(false);
 
   // Fallback: localStorage
   const salvo = localStorage.getItem('catalogo_fil_v3');
