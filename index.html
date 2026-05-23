@@ -653,9 +653,10 @@ let carrinhoCliente = {};
 let coordenadasPorPagina = {};
 
 // ── Configuração JSONBin ──
-const JSONBIN_API_KEY = localStorage.getItem('jsonbin_api_key') || '$2a$10$Pzap.mBIZt22YaBI5AKLjOo7AlBO/jf.U4mB9ImTCcwrNCOqFILDK';
-const JSONBIN_BIN_ID  = '6a10e4c76877513b27b91911';
-const JSONBIN_BASE    = 'https://api.jsonbin.io/v3/b';
+const JSONBIN_API_KEY    = '$2a$10$Pzap.mBIZt22YaBI5AKLjOo7AlBO/jf.U4mB9ImTCcwrNCOqFILDK';
+const JSONBIN_ACCESS_KEY = '$2a$10$/fNNpe1k4OqTaECL7dlo9eUslCcmQzokPa8597t8nSJglFas5Eenq';
+const JSONBIN_BIN_ID     = '6a10e4c76877513b27b91911';
+const JSONBIN_BASE       = 'https://api.jsonbin.io/v3/b';
 
 // ── Utilitários ──
 function toast(msg, tipo = 'success') {
@@ -832,7 +833,7 @@ window.onload = async function() {
   // Sempre tenta carregar do JSONBin (leitura usa X-Access-Key ou master key)
   try {
     mostrarLoadingVitrine(true);
-    const headers = { 'X-Bin-Meta': 'false', 'X-Master-Key': JSONBIN_API_KEY };
+    const headers = { 'X-Bin-Meta': 'false', 'X-Access-Key': JSONBIN_ACCESS_KEY };
 
     const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, { headers });
     if (res.ok) {
