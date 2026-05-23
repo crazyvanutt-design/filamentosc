@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalogo Filamentos v18</title>
+<title>Catalogo Filamentos v19</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -143,7 +143,7 @@ header .ver{font-size:0.7rem;color:#555;}
 <header>
   <h1>🧵 Catalogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span class="ver">v18</span>
+  <span class="ver">v19</span>
   <button class="btn btn-primary" style="margin-left:auto;" onclick="abrirAdmin()">⚙ Area Admin</button>
 </header>
 
@@ -687,11 +687,15 @@ async function publicarCatalogo() {
   btn.textContent='⏳ Publicando...'; btn.disabled=true;
 
   try {
-    // Apaga todos os produtos antigos
-    await fetch(SUPA_URL + '/rest/v1/produtos?id=gte.0', {
-      method: 'DELETE',
-      headers: SUPA_HEADERS
+    // Apaga todos via RPC
+    await fetch(SUPA_URL + '/rest/v1/rpc/limpar_produtos', {
+      method: 'POST',
+      headers: SUPA_HEADERS,
+      body: JSON.stringify({})
     });
+
+    // Aguarda um momento antes de inserir
+    await new Promise(function(res){ setTimeout(res, 500); });
 
     // Insere os novos (sem o campo id para o Supabase gerar)
     var novos = produtosCatalogo.map(function(p){
