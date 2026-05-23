@@ -487,7 +487,7 @@
 <header>
   <h1>🧵 Catálogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v11</span>
+  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v12</span>
   <button class="btn btn-primary" style="margin-left:auto; font-size:0.85rem;" onclick="acessarAdmin()">⚙ Área Admin</button>
 </header>
 
@@ -819,30 +819,54 @@ function novoUpload() {
 }
 
 // ── ETAPA 1 — Carregamento inicial ──
-window.onload = async function() {
+window.onload = function() {
+  // Configura upload
+  const uploadArea = document.getElementById('uploadArea');
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') processarPDF(file);
+    else toast('Por favor, selecione um arquivo PDF.', 'error');
+  });
+  document.getElementById('pdfInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) processarPDF(file);
+  });
+
+  // Carrega catálogo
+  carregarCatalogo();
+};
+
+async function carregarCatalogo() {
   try {
     mostrarLoadingVitrine(true);
-    // Lê direto do raw do Gist com cache-busting
     const url = `https://gist.githubusercontent.com/crazyvanutt-design/${GIST_ID}/raw/${GIST_FILENAME}?t=${Date.now()}`;
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
       produtosCatalogo = data.produtos || [];
-      mostrarLoadingVitrine(false);
-      if (produtosCatalogo.length > 0) { irParaEtapa(4); return; }
+      if (produtosCatalogo.length > 0) {
+        mostrarLoadingVitrine(false);
+        irParaEtapa(4);
+        return;
+      }
     }
   } catch(e) { console.warn('Gist indisponível:', e); }
+
   mostrarLoadingVitrine(false);
 
   // Fallback: localStorage
-  const salvo = localStorage.getItem('catalogo_fil_v3');
-  if (salvo) {
-    try {
+  try {
+    const salvo = localStorage.getItem('catalogo_fil_v3');
+    if (salvo) {
       produtosCatalogo = JSON.parse(salvo);
       if (produtosCatalogo.length > 0) { irParaEtapa(4); return; }
-    } catch(e) {}
-  }
-};
+    }
+  } catch(e) {}
+}
 
 function mostrarLoadingVitrine(show) {
   let el = document.getElementById('loadingOverlay');
@@ -856,21 +880,7 @@ function mostrarLoadingVitrine(show) {
   el.style.display = show ? 'flex' : 'none';
 }
 
-const uploadArea = document.getElementById('uploadArea');
-uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
-uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-uploadArea.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadArea.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') processarPDF(file);
-  else toast('Por favor, selecione um arquivo PDF.', 'error');
-});
 
-document.getElementById('pdfInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file) processarPDF(file);
-});
 
 async function processarPDF(file) {
   const status = document.getElementById('uploadStatus');
