@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalogo Filamentos v12</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+<title>Catalogo Filamentos v13</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -143,7 +143,7 @@ header .ver{font-size:0.7rem;color:#555;}
 <header>
   <h1>🧵 Catalogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span class="ver">v12</span>
+  <span class="ver">v13</span>
   <button class="btn btn-primary" style="margin-left:auto;" onclick="abrirAdmin()">⚙ Area Admin</button>
 </header>
 
@@ -255,8 +255,10 @@ header .ver{font-size:0.7rem;color:#555;}
 // ── Libs ──
 var pdfjsLib;
 window.addEventListener('load', function() {
-  pdfjsLib = window['pdfjs-dist/build/pdf'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+  pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+  if(pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
   inicializar();
 });
 
