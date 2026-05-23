@@ -487,7 +487,7 @@
 <header>
   <h1>🧵 Catálogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v10</span>
+  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v11</span>
   <button class="btn btn-primary" style="margin-left:auto; font-size:0.85rem;" onclick="acessarAdmin()">⚙ Área Admin</button>
 </header>
 
@@ -654,8 +654,8 @@ let coordenadasPorPagina = {};
 // ── Configuração GitHub Gist ──
 const GIST_ID       = 'f2d55f666a0f3667849887488d5dc225';
 const GIST_FILENAME = 'catalogo.json';
-const GIST_TOKEN    = localStorage.getItem('gist_token') || '';
 const GIST_API      = 'https://api.github.com/gists';
+function getGistToken() { return localStorage.getItem('gist_token') || ''; }
 
 // ── Utilitários ──
 function toast(msg, tipo = 'success') {
@@ -1181,7 +1181,7 @@ async function publicarCatalogo() {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `token ${GIST_TOKEN}`
+        'Authorization': `token ${getGistToken()}`
       },
       body: JSON.stringify({
         files: {
