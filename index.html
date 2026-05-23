@@ -487,7 +487,7 @@
 <header>
   <h1>🧵 Catálogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v9</span>
+  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v10</span>
   <button class="btn btn-primary" style="margin-left:auto; font-size:0.85rem;" onclick="acessarAdmin()">⚙ Área Admin</button>
 </header>
 
@@ -1028,21 +1028,27 @@ async function iniciarOCR(numPag) {
   const sx = d.width < 0 ? d.startX + d.width : d.startX;
   const sy = d.height < 0 ? d.startY + d.height : d.startY;
 
-  tmpCanvas.width = w;
-  tmpCanvas.height = h;
-  tmpCanvas.getContext('2d').drawImage(pCanvas, sx, sy, w, h, 0, 0, w, h);
+  // Redimensiona para max 300px de largura para economizar espaço
+  const MAX_W = 300;
+  let finalW = w, finalH = h;
+  if (w > MAX_W) { finalH = Math.round(h * MAX_W / w); finalW = MAX_W; }
+
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = finalW;
+  tmpCanvas.height = finalH;
+  tmpCanvas.getContext('2d').drawImage(pCanvas, sx, sy, w, h, 0, 0, finalW, finalH);
 
   try {
     const resultado = await Tesseract.recognize(tmpCanvas, 'por');
     const linhas = resultado.data.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     coordenadasPorPagina[numPag]._ocrLinhas = linhas;
-    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.85);
+    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.35);
     status.className = 'crop-status ok';
     status.textContent = `✓ Texto detectado! Clique em "+ Adicionar produto" para incluir.`;
     btn.disabled = false;
   } catch(e) {
     coordenadasPorPagina[numPag]._ocrLinhas = [];
-    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.85);
+    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.35);
     status.className = 'crop-status ok';
     status.textContent = '⚠ Não leu texto. Clique em "+ Adicionar" assim mesmo.';
     btn.disabled = false;
