@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo de Filamentos 3D</title>
+<title>Catálogo de Filamentos 3D — v9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -653,7 +653,7 @@ let coordenadasPorPagina = {};
 // ── Configuração GitHub Gist ──
 const GIST_ID       = 'f2d55f666a0f3667849887488d5dc225';
 const GIST_FILENAME = 'catalogo.json';
-const GIST_TOKEN    = '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';
+const GIST_TOKEN    = localStorage.getItem('gist_token') || '';
 const GIST_API      = 'https://api.github.com/gists';
 
 // ── Utilitários ──
@@ -1296,4 +1296,4 @@ function gerarPedidoPDF() {
 }
 </script>
 </body>
-</html>1
+</html>
