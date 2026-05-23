@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalogo Filamentos v13</title>
+<title>Catalogo Filamentos v15</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -143,7 +143,7 @@ header .ver{font-size:0.7rem;color:#555;}
 <header>
   <h1>🧵 Catalogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span class="ver">v13</span>
+  <span class="ver">v15</span>
   <button class="btn btn-primary" style="margin-left:auto;" onclick="abrirAdmin()">⚙ Area Admin</button>
 </header>
 
@@ -493,7 +493,7 @@ async function iniciarOCR(n) {
   var w=Math.abs(d.width), h=Math.abs(d.height);
   var sx=d.width<0?d.startX+d.width:d.startX, sy=d.height<0?d.startY+d.height:d.startY;
 
-  var MAX_W=300, fw=w, fh=h;
+  var MAX_W=150, fw=w, fh=h;
   if(w>MAX_W){ fh=Math.round(h*MAX_W/w); fw=MAX_W; }
 
   var tmp=document.createElement('canvas'); tmp.width=fw; tmp.height=fh;
@@ -505,7 +505,7 @@ async function iniciarOCR(n) {
     coordPorPagina[n]._ocr=linhas;
   } catch(e) { coordPorPagina[n]._ocr=[]; }
 
-  coordPorPagina[n]._img=tmp.toDataURL('image/jpeg',0.35);
+  coordPorPagina[n]._img=tmp.toDataURL('image/jpeg',0.10);
   status.className='crop-status ok'; status.textContent='✓ Pronto! Clique em "+ Adicionar produto".';
   btn.disabled=false;
 }
