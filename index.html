@@ -3,520 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalogo Filamentos v9</title>
+<title>Catalogo Filamentos v12</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f13;
-    --surface: #18181f;
-    --surface2: #22222d;
-    --border: #2e2e3d;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --success: #22d07a;
-    --text: #e8e8f0;
-    --muted: #7a7a9a;
-    --radius: 10px;
-  }
+:root {
+  --bg:#0f0f13; --surface:#18181f; --surface2:#22222d; --border:#2e2e3d;
+  --accent:#6c63ff; --accent2:#ff6584; --success:#22d07a;
+  --text:#e8e8f0; --muted:#7a7a9a; --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.2rem 2rem;display:flex;align-items:center;gap:1rem;}
+header h1{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text);}
+header .sub{font-size:0.82rem;color:var(--muted);}
+header .ver{font-size:0.7rem;color:#555;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+.stepper{display:flex;align-items:center;justify-content:center;padding:2rem;gap:0;user-select:none;}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.step-circle{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;border:2px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.3s;z-index:2;}
+.step.active .step-circle{border-color:var(--accent);background:var(--accent);color:white;box-shadow:0 0 18px rgba(108,99,255,0.5);}
+.step.done .step-circle{border-color:var(--success);background:var(--success);color:#0f0f13;}
+.step-label{font-size:0.72rem;color:var(--muted);font-weight:500;text-align:center;max-width:80px;transition:color 0.3s;}
+.step.active .step-label{color:var(--accent);}
+.step.done .step-label{color:var(--success);}
+.step-line{width:80px;height:2px;background:var(--border);margin-bottom:20px;transition:background 0.3s;}
+.step-line.done{background:var(--success);}
 
-  /* ── HEADER ── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1.2rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  header h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
-  header span.sub {
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-left: auto;
-  }
+.panel{display:none;}
+.panel.active{display:block;}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;}
 
-  /* ── STEPPER ── */
-  .stepper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    gap: 0;
-    user-select: none;
-  }
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    position: relative;
-  }
-  .step-circle {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    border: 2px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
-  }
-  .step.active .step-circle {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 0 18px rgba(108,99,255,0.5);
-  }
-  .step.done .step-circle {
-    border-color: var(--success);
-    background: var(--success);
-    color: #0f0f13;
-  }
-  .step-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-weight: 500;
-    text-align: center;
-    max-width: 80px;
-    transition: color 0.3s;
-  }
-  .step.active .step-label { color: var(--accent); }
-  .step.done .step-label { color: var(--success); }
-  .step-line {
-    width: 80px; height: 2px;
-    background: var(--border);
-    margin-bottom: 20px;
-    transition: background 0.3s;
-  }
-  .step-line.done { background: var(--success); }
+/* Upload */
+.upload-area{border:2px dashed var(--border);border-radius:16px;padding:4rem 2rem;text-align:center;cursor:pointer;transition:all 0.25s;background:var(--surface);position:relative;}
+.upload-area:hover,.upload-area.drag-over{border-color:var(--accent);background:rgba(108,99,255,0.06);}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:3rem;margin-bottom:1rem;display:block;}
+.upload-area h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:0.5rem;}
+.upload-area p{color:var(--muted);font-size:0.9rem;}
+.progress-bar-wrap{margin-top:1.5rem;background:var(--surface2);border-radius:100px;overflow:hidden;height:6px;display:none;}
+.progress-bar-fill{height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:100px;}
+#uploadStatus{margin-top:1rem;color:var(--accent);font-weight:500;font-size:0.9rem;min-height:1.2rem;}
 
-  /* ── PANELS ── */
-  .panel { display: none; }
-  .panel.active { display: block; }
+/* Etapa 2 */
+.etapa2-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.etapa2-header h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;}
+.tag{background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.3);color:var(--accent);font-size:0.8rem;padding:6px 14px;border-radius:100px;font-weight:500;}
+.pagina-bloco{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:2rem;overflow:hidden;}
+.pagina-titulo{background:var(--surface2);padding:10px 18px;font-size:0.78rem;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.pagina-canvas-wrap{padding:1.5rem;overflow-x:auto;}
+.canvas-wrapper{position:relative;display:inline-block;cursor:crosshair;box-shadow:0 4px 24px rgba(0,0,0,0.4);background:#fff;user-select:none;}
+.crop-canvas{position:absolute;top:0;left:0;z-index:5;}
+.crop-action-bar{padding:0 1.5rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.crop-status{font-size:0.85rem;color:var(--muted);flex:1;}
+.crop-status.ok{color:var(--success);}
+.crop-status.reading{color:var(--accent);}
+.etapa2-footer{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);flex-wrap:wrap;gap:1rem;}
+.contador{font-size:0.9rem;color:var(--muted);}
+.contador strong{color:var(--success);font-size:1.1rem;}
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+/* Botões */
+.btn{padding:0.65rem 1.4rem;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{filter:brightness(1.12);box-shadow:0 4px 16px rgba(108,99,255,0.4);}
+.btn-success{background:var(--success);color:#0f0f13;}
+.btn-success:hover{filter:brightness(1.1);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:rgba(255,101,132,0.15);color:var(--accent2);border:1px solid rgba(255,101,132,0.3);}
+.btn-danger:hover{background:rgba(255,101,132,0.25);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;filter:none!important;box-shadow:none!important;}
+.btn-lg{padding:0.9rem 2rem;font-size:1rem;}
+.btn-full{width:100%;justify-content:center;}
 
-  /* ── ETAPA 1 — Upload ── */
-  .upload-area {
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 4rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    background: var(--surface);
-    position: relative;
-  }
-  .upload-area:hover, .upload-area.drag-over {
-    border-color: var(--accent);
-    background: rgba(108,99,255,0.06);
-  }
-  .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .upload-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    display: block;
-  }
-  .upload-area h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  .upload-area p { color: var(--muted); font-size: 0.9rem; }
-  .progress-bar-wrap {
-    margin-top: 1.5rem;
-    background: var(--surface2);
-    border-radius: 100px;
-    overflow: hidden;
-    height: 6px;
-    display: none;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    width: 0%;
-    transition: width 0.3s ease;
-    border-radius: 100px;
-  }
-  #uploadStatus { margin-top: 1rem; color: var(--accent); font-weight: 500; font-size: 0.9rem; min-height: 1.2rem; }
+/* Revisão */
+.revisao-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.revisao-header h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;}
+.revisao-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;}
+.revisao-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color 0.2s;}
+.revisao-card:hover{border-color:var(--accent);}
+.revisao-card-img{height:140px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.revisao-card-img img{max-height:100%;max-width:100%;object-fit:contain;}
+.revisao-card-body{padding:1rem;display:flex;flex-direction:column;gap:8px;flex:1;}
+.revisao-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.revisao-card-num{font-size:0.7rem;color:var(--muted);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.field-group{display:flex;flex-direction:column;gap:3px;}
+.field-group label{font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.field-input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;width:100%;transition:border-color 0.2s;}
+.field-input:focus{outline:none;border-color:var(--accent);}
+.fields-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.revisao-footer{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:1rem;flex-wrap:wrap;}
 
-  /* ── ETAPA 2 — Seleção ── */
-  .etapa2-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .etapa2-header h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-  .tag-instrucao {
-    background: rgba(108,99,255,0.12);
-    border: 1px solid rgba(108,99,255,0.3);
-    color: var(--accent);
-    font-size: 0.8rem;
-    padding: 6px 14px;
-    border-radius: 100px;
-    font-weight: 500;
-  }
+/* Vitrine */
+.vitrine-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.vitrine-header h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;}
+.vitrine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;}
+.vitrine-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform 0.2s,border-color 0.2s;}
+.vitrine-card:hover{transform:translateY(-3px);border-color:var(--accent);}
+.vitrine-card-img{height:160px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.vitrine-card-img img{max-height:100%;max-width:100%;object-fit:contain;}
+.vitrine-card-body{padding:1rem;flex:1;display:flex;flex-direction:column;}
+.vitrine-card-body h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.6rem;}
+.tech-list{list-style:none;font-size:0.82rem;display:flex;flex-direction:column;gap:4px;margin-bottom:1rem;}
+.tech-list li{display:flex;justify-content:space-between;padding-bottom:3px;border-bottom:1px dashed var(--border);}
+.tech-list .lbl{color:var(--muted);}
+.tech-list .val{color:var(--text);font-weight:600;}
+.qtd-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;background:var(--surface2);padding:8px 10px;border-radius:6px;}
+.qtd-row label{font-size:0.8rem;color:var(--muted);font-weight:600;}
+.input-qtd{width:64px;padding:5px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-weight:700;font-size:1rem;}
+.input-qtd:focus{outline:none;border-color:var(--accent);}
 
-  .pagina-bloco {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 2rem;
-    overflow: hidden;
-  }
-  .pagina-titulo {
-    background: var(--surface2);
-    padding: 10px 18px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-  }
-  .pagina-canvas-wrap {
-    padding: 1.5rem;
-    overflow-x: auto;
-  }
-  .canvas-wrapper {
-    position: relative;
-    display: inline-block;
-    cursor: crosshair;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    background: #fff;
-    user-select: none;
-  }
-  .crop-canvas {
-    position: absolute; top: 0; left: 0; z-index: 5;
-  }
+.floating-btn{position:fixed;bottom:2rem;right:2rem;padding:1rem 2rem;background:var(--success);color:#0f0f13;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;display:none;box-shadow:0 8px 32px rgba(34,208,122,0.35);z-index:999;transition:all 0.2s;}
+.floating-btn:hover{transform:scale(1.04);}
 
-  /* Botão de adicionar após recorte */
-  .crop-action-bar {
-    padding: 0 1.5rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .crop-status {
-    font-size: 0.85rem;
-    color: var(--muted);
-    flex: 1;
-  }
-  .crop-status.ok { color: var(--success); }
-  .crop-status.reading { color: var(--accent); }
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:10000;align-items:center;justify-content:center;padding:1rem;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+.modal-header{background:var(--surface2);padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.modal-header span{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;}
+.modal-body{padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
 
-  /* ── BOTÕES ── */
-  .btn {
-    padding: 0.65rem 1.4rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-primary { background: var(--accent); color: white; }
-  .btn-primary:hover { filter: brightness(1.12); box-shadow: 0 4px 16px rgba(108,99,255,0.4); }
-  .btn-success { background: var(--success); color: #0f0f13; }
-  .btn-success:hover { filter: brightness(1.1); }
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-danger { background: rgba(255,101,132,0.15); color: var(--accent2); border: 1px solid rgba(255,101,132,0.3); }
-  .btn-danger:hover { background: rgba(255,101,132,0.25); }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; filter: none !important; box-shadow: none !important; }
-  .btn-lg { padding: 0.9rem 2rem; font-size: 1rem; }
-  .btn-full { width: 100%; justify-content: center; }
+/* Toast */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid var(--border);padding:12px 24px;border-radius:100px;font-weight:500;font-size:0.9rem;opacity:0;transition:all 0.35s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--success);color:var(--success);}
+.toast.error{border-color:var(--accent2);color:var(--accent2);}
 
-  .etapa2-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .contador-selecionados {
-    font-size: 0.9rem;
-    color: var(--muted);
-  }
-  .contador-selecionados strong { color: var(--success); font-size: 1.1rem; }
-
-  /* ── ETAPA 3 — Revisão ── */
-  .revisao-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.2rem;
-  }
-  .revisao-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: border-color 0.2s;
-  }
-  .revisao-card:hover { border-color: var(--accent); }
-  .revisao-card-img {
-    height: 140px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-  .revisao-card-img img { max-height: 100%; max-width: 100%; object-fit: contain; }
-  .revisao-card-body { padding: 1rem; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .revisao-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-  .revisao-card-num {
-    font-size: 0.7rem;
-    color: var(--muted);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .field-group { display: flex; flex-direction: column; gap: 3px; }
-  .field-group label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-  .field-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
-    width: 100%;
-    transition: border-color 0.2s;
-  }
-  .field-input:focus { outline: none; border-color: var(--accent); }
-  .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .revisao-card-footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.5rem 1rem 1rem;
-  }
-
-  .revisao-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .revisao-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
-
-  .revisao-footer {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  /* ── ETAPA 4 — Vitrine ── */
-  .vitrine-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .vitrine-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
-
-  .vitrine-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.2rem;
-  }
-  .vitrine-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .vitrine-card:hover { transform: translateY(-3px); border-color: var(--accent); }
-  .vitrine-card-img {
-    height: 160px;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  .vitrine-card-img img { max-height: 100%; max-width: 100%; object-fit: contain; }
-  .vitrine-card-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
-  .vitrine-card-body h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.6rem;
-    color: var(--text);
-  }
-  .tech-list { list-style: none; font-size: 0.82rem; display: flex; flex-direction: column; gap: 4px; margin-bottom: 1rem; }
-  .tech-list li { display: flex; justify-content: space-between; padding-bottom: 3px; border-bottom: 1px dashed var(--border); }
-  .tech-list .lbl { color: var(--muted); }
-  .tech-list .val { color: var(--text); font-weight: 600; }
-  .qtd-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: auto;
-    background: var(--surface2);
-    padding: 8px 10px;
-    border-radius: 6px;
-  }
-  .qtd-row label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
-  .input-qtd {
-    width: 64px;
-    padding: 5px;
-    text-align: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    color: var(--text);
-    font-weight: 700;
-    font-size: 1rem;
-  }
-  .input-qtd:focus { outline: none; border-color: var(--accent); }
-
-  /* Botão flutuante do pedido */
-  .floating-btn {
-    position: fixed;
-    bottom: 2rem; right: 2rem;
-    padding: 1rem 2rem;
-    background: var(--success);
-    color: #0f0f13;
-    border: none;
-    border-radius: 50px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    cursor: pointer;
-    display: none;
-    box-shadow: 0 8px 32px rgba(34,208,122,0.35);
-    z-index: 999;
-    transition: all 0.2s;
-  }
-  .floating-btn:hover { transform: scale(1.04); }
-
-  /* Novo pedido / voltar */
-  .vitrine-footer {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 12px 24px;
-    border-radius: 100px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: all 0.35s ease;
-    z-index: 9999;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--success); color: var(--success); }
-  .toast.error { border-color: var(--accent2); color: var(--accent2); }
+/* Loading */
+#loadingOverlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:1rem;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🧵 Catálogo de Filamentos 3D</h1>
+  <h1>🧵 Catalogo de Filamentos 3D</h1>
   <span class="sub">Sistema de cadastro inteligente</span>
-  <span style="font-size:0.7rem; color:#444; margin-left:8px;">v12</span>
-  <button class="btn btn-primary" style="margin-left:auto; font-size:0.85rem;" onclick="acessarAdmin()">⚙ Área Admin</button>
+  <span class="ver">v12</span>
+  <button class="btn btn-primary" style="margin-left:auto;" onclick="abrirAdmin()">⚙ Area Admin</button>
 </header>
 
-<!-- STEPPER -->
 <div class="stepper" id="stepper">
-  <div class="step active" id="step1">
-    <div class="step-circle">1</div>
-    <div class="step-label">Upload PDF</div>
-  </div>
+  <div class="step active" id="step1"><div class="step-circle">1</div><div class="step-label">Upload PDF</div></div>
   <div class="step-line" id="line1"></div>
-  <div class="step" id="step2">
-    <div class="step-circle">2</div>
-    <div class="step-label">Selecionar Produtos</div>
-  </div>
+  <div class="step" id="step2"><div class="step-circle">2</div><div class="step-label">Selecionar Produtos</div></div>
   <div class="step-line" id="line2"></div>
-  <div class="step" id="step3">
-    <div class="step-circle">3</div>
-    <div class="step-label">Revisar & Editar</div>
-  </div>
+  <div class="step" id="step3"><div class="step-circle">3</div><div class="step-label">Revisar e Editar</div></div>
   <div class="step-line" id="line3"></div>
-  <div class="step" id="step4">
-    <div class="step-circle">4</div>
-    <div class="step-label">Catálogo Publicado</div>
-  </div>
+  <div class="step" id="step4"><div class="step-circle">4</div><div class="step-label">Catalogo Publicado</div></div>
 </div>
 
 <div class="container">
 
-  <!-- ══════════════ ETAPA 1 — UPLOAD ══════════════ -->
+  <!-- ETAPA 1 -->
   <div class="panel active" id="panel1">
     <div class="upload-area" id="uploadArea">
       <input type="file" id="pdfInput" accept=".pdf">
@@ -530,785 +173,496 @@
     </div>
   </div>
 
-  <!-- ══════════════ ETAPA 2 — SELEÇÃO ══════════════ -->
+  <!-- ETAPA 2 -->
   <div class="panel" id="panel2">
     <div class="etapa2-header">
       <h2>Selecione os produtos no PDF</h2>
-      <span class="tag-instrucao">✦ Arraste o mouse para recortar cada produto</span>
+      <span class="tag">Arraste o mouse para recortar cada produto</span>
     </div>
-
     <div id="areaPaginas"></div>
-
     <div class="etapa2-footer">
-      <span class="contador-selecionados">
-        <strong id="countSelecionados">0</strong> produto(s) selecionado(s)
-      </span>
-      <div style="display:flex; gap:1rem;">
+      <span class="contador"><strong id="countSelecionados">0</strong> produto(s) selecionado(s)</span>
+      <div style="display:flex;gap:1rem;">
         <button class="btn btn-ghost" onclick="irParaEtapa(1)">← Voltar</button>
-        <button class="btn btn-primary btn-lg" id="btnIrRevisao" onclick="irParaEtapa(3)" disabled>
-          Revisar Produtos →
-        </button>
+        <button class="btn btn-primary btn-lg" id="btnIrRevisao" onclick="irParaEtapa(3)" disabled>Revisar Produtos →</button>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════ ETAPA 3 — REVISÃO ══════════════ -->
+  <!-- ETAPA 3 -->
   <div class="panel" id="panel3">
     <div class="revisao-header">
       <h2>Revise e corrija os dados</h2>
-      <span class="tag-instrucao">✦ Edite qualquer campo antes de publicar</span>
+      <span class="tag">Edite qualquer campo antes de publicar</span>
     </div>
-
     <div class="revisao-grid" id="revisaoGrid"></div>
-
     <div class="revisao-footer">
-      <button class="btn btn-ghost" onclick="irParaEtapa(2)">← Voltar para seleção</button>
-      <button class="btn btn-success btn-lg" onclick="publicarCatalogo()">
-        ✓ Salvar e Publicar Catálogo
-      </button>
+      <button class="btn btn-ghost" onclick="irParaEtapa(2)">← Voltar</button>
+      <button class="btn btn-success btn-lg" id="btnPublicar" onclick="publicarCatalogo()">✓ Salvar e Publicar Catalogo</button>
     </div>
   </div>
 
-  <!-- ══════════════ ETAPA 4 — VITRINE ══════════════ -->
+  <!-- ETAPA 4 -->
   <div class="panel" id="panel4">
     <div class="vitrine-header">
       <h2>Filamentos disponíveis</h2>
     </div>
-
     <div class="vitrine-grid" id="vitrineGrid"></div>
-
-
   </div>
 
 </div>
 
-<!-- Botão flutuante pedido -->
 <button class="floating-btn" id="btnGerarPDF" onclick="gerarPedidoPDF()">
   📋 Gerar Pedido (<span id="countPedido">0</span> itens)
 </button>
 
 <!-- Modal Admin -->
-<div id="modalAdmin" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; width:100%; max-width:480px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.6);">
-
-    <!-- Header modal -->
-    <div style="background:var(--surface2); padding:1.2rem 1.5rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border);">
-      <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem;">⚙ Área Administrativa</span>
-      <button onclick="fecharModal()" style="background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; line-height:1;">×</button>
+<div class="modal-overlay" id="modalAdmin">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>⚙ Area Administrativa</span>
+      <button class="modal-close" onclick="fecharAdmin()">×</button>
     </div>
-
-    <!-- Tela de senha -->
-    <div id="modalSenha" style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
-      <p style="color:var(--muted); font-size:0.9rem;">Digite a senha para acessar o painel administrativo.</p>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <label style="font-size:0.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;">Senha</label>
-        <input id="inputSenhaAdmin" type="password" class="field-input" placeholder="••••••" onkeydown="if(event.key==='Enter') verificarSenha()">
+    <!-- Tela senha -->
+    <div class="modal-body" id="telaSenha">
+      <p style="color:var(--muted);font-size:0.9rem;">Digite a senha para acessar o painel administrativo.</p>
+      <div class="field-group">
+        <label>Senha</label>
+        <input type="password" id="inputSenha" class="field-input" placeholder="••••••" onkeydown="if(event.key==='Enter')verificarSenha()">
       </div>
-      <div id="erroSenha" style="color:var(--accent2); font-size:0.85rem; display:none;">Senha incorreta. Tente novamente.</div>
+      <div id="erroSenha" style="color:var(--accent2);font-size:0.85rem;display:none;">Senha incorreta.</div>
       <button class="btn btn-primary btn-full" onclick="verificarSenha()">Entrar</button>
     </div>
-
-    <!-- Tela de menu admin -->
-    <div id="modalMenu" style="padding:1.5rem; display:none; flex-direction:column; gap:0.8rem;">
-      <div id="statusJsonbin" style="padding:10px 14px; border-radius:8px; font-size:0.85rem; font-weight:500; margin-bottom:4px;"></div>
-      <button class="btn btn-ghost btn-full" style="justify-content:flex-start; gap:10px;" onclick="adminEditarCatalogo()">✏️ Editar catálogo atual</button>
-      <button class="btn btn-ghost btn-full" style="justify-content:flex-start; gap:10px;" onclick="adminNovoUpload()">📄 Carregar novo PDF</button>
+    <!-- Tela menu -->
+    <div class="modal-body" id="telaMenu" style="display:none;">
+      <div id="statusNuvem" style="padding:10px 14px;border-radius:8px;font-size:0.85rem;font-weight:500;background:rgba(34,208,122,0.1);border:1px solid rgba(34,208,122,0.3);color:var(--success);">
+        🟢 GitHub Gist configurado
+      </div>
+      <button class="btn btn-ghost btn-full" style="justify-content:flex-start;" onclick="adminEditar()">✏️ Editar catalogo atual</button>
+      <button class="btn btn-ghost btn-full" style="justify-content:flex-start;" onclick="adminNovo()">📄 Carregar novo PDF</button>
     </div>
-
-    <!-- Tela configuração JSONBin -->
-    <div id="modalJsonbin" style="padding:1.5rem; display:none; flex-direction:column; gap:1rem;">
-      <p style="color:var(--muted); font-size:0.85rem; line-height:1.5;">
-        Crie uma conta gratuita em <a href="https://jsonbin.io" target="_blank" style="color:var(--accent);">jsonbin.io</a>, copie sua <strong style="color:var(--text);">API Key</strong> e cole abaixo. O sistema cria o Bin automaticamente.
-      </p>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <label style="font-size:0.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;">API Key</label>
-        <input id="inputApiKey" type="text" class="field-input" placeholder="$2b$10$...">
-      </div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <label style="font-size:0.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;">Bin ID <span style="font-weight:400; text-transform:none;">(deixe vazio para criar novo)</span></label>
-        <input id="inputBinId" type="text" class="field-input" placeholder="opcional">
-      </div>
-      <div id="jsonbinMsg" style="font-size:0.85rem; min-height:1rem;"></div>
-      <div style="display:flex; gap:0.8rem;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="mostrarMenuAdmin()">← Voltar</button>
-        <button class="btn btn-primary" style="flex:2;" onclick="salvarConfJsonbin()">☁️ Salvar configuração</button>
-      </div>
-      <button class="btn btn-danger btn-full" onclick="removerConfJsonbin()">🗑 Remover configuração JSONBin</button>
-    </div>
-
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<div id="loadingOverlay" style="display:none;">
+  <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <p style="color:var(--muted);font-size:0.9rem;">Carregando catalogo...</p>
+</div>
+
 <script>
-const pdfjsLib = window['pdfjs-dist/build/pdf'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+// ── Libs ──
+var pdfjsLib;
+window.addEventListener('load', function() {
+  pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+  inicializar();
+});
 
-let produtosSessao = [];
-let produtosCatalogo = [];
-let carrinhoCliente = {};
-let coordenadasPorPagina = {};
+// ── Config ──
+var GIST_ID       = 'f2d55f666a0f3667849887488d5dc225';
+var GIST_FILENAME = 'catalogo.json';
+var GIST_API      = 'https://api.github.com/gists';
+function getToken() { return localStorage.getItem('gist_token') || ''; }
 
-// ── Configuração GitHub Gist ──
-const GIST_ID       = 'f2d55f666a0f3667849887488d5dc225';
-const GIST_FILENAME = 'catalogo.json';
-const GIST_API      = 'https://api.github.com/gists';
-function getGistToken() { return localStorage.getItem('gist_token') || ''; }
+// ── Estado ──
+var produtosSessao   = [];
+var produtosCatalogo = [];
+var carrinhoCliente  = {};
+var coordPorPagina   = {};
 
-// ── Utilitários ──
-function toast(msg, tipo = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${tipo} show`;
-  setTimeout(() => { t.className = 'toast'; }, 3000);
-}
+// ── Init ──
+function inicializar() {
+  // Upload listeners
+  var area = document.getElementById('uploadArea');
+  var inp  = document.getElementById('pdfInput');
 
-function irParaEtapa(n) {
-  // Validação
-  if (n === 3 && produtosSessao.length === 0) {
-    toast('Selecione ao menos um produto primeiro!', 'error');
-    return;
-  }
-
-  [1,2,3,4].forEach(i => {
-    document.getElementById(`panel${i}`).classList.toggle('active', i === n);
-    const stepEl = document.getElementById(`step${i}`);
-    if (i < n) {
-      stepEl.className = 'step done';
-      stepEl.querySelector('.step-circle').textContent = '✓';
-    } else if (i === n) {
-      stepEl.className = 'step active';
-      stepEl.querySelector('.step-circle').textContent = i;
-    } else {
-      stepEl.className = 'step';
-      stepEl.querySelector('.step-circle').textContent = i;
-    }
-    if (i < 4) {
-      document.getElementById(`line${i}`).className = i < n ? 'step-line done' : 'step-line';
-    }
+  area.addEventListener('dragover', function(e){ e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', function(){ area.classList.remove('drag-over'); });
+  area.addEventListener('drop', function(e){
+    e.preventDefault(); area.classList.remove('drag-over');
+    var f = e.dataTransfer.files[0];
+    if(f && f.type==='application/pdf') processarPDF(f);
+    else toast('Selecione um arquivo PDF.','error');
+  });
+  inp.addEventListener('change', function(e){
+    if(e.target.files[0]) processarPDF(e.target.files[0]);
   });
 
-  // Oculta stepper na vitrine do cliente
-  document.getElementById('stepper').style.display = n === 4 ? 'none' : 'flex';
-
-  if (n === 3) renderizarRevisao();
-  if (n === 4) renderizarVitrine();
-}
-
-// ── Modal Admin ──
-function acessarAdmin() {
-  document.getElementById('modalAdmin').style.display = 'flex';
-  document.getElementById('modalSenha').style.display = 'flex';
-  document.getElementById('modalMenu').style.display = 'none';
-  document.getElementById('modalJsonbin').style.display = 'none';
-  document.getElementById('inputSenhaAdmin').value = '';
-  document.getElementById('erroSenha').style.display = 'none';
-  setTimeout(() => document.getElementById('inputSenhaAdmin').focus(), 100);
-}
-
-function fecharModal() {
-  document.getElementById('modalAdmin').style.display = 'none';
-}
-
-function verificarSenha() {
-  const senha = document.getElementById('inputSenhaAdmin').value;
-  if (senha === 'admin') {
-    document.getElementById('erroSenha').style.display = 'none';
-    mostrarMenuAdmin();
-  } else {
-    document.getElementById('erroSenha').style.display = 'block';
-    document.getElementById('inputSenhaAdmin').select();
-  }
-}
-
-function mostrarMenuAdmin() {
-  document.getElementById('modalSenha').style.display = 'none';
-  document.getElementById('modalJsonbin').style.display = 'none';
-  document.getElementById('modalMenu').style.display = 'flex';
-
-  const statusEl = document.getElementById('statusJsonbin');
-  statusEl.style.background = 'rgba(34,208,122,0.1)';
-  statusEl.style.border = '1px solid rgba(34,208,122,0.3)';
-  statusEl.style.color = 'var(--success)';
-  statusEl.textContent = '🟢 GitHub Gist configurado — catálogo salvo na nuvem';
-}
-
-function mostrarConfJsonbin() {
-  document.getElementById('modalMenu').style.display = 'none';
-  document.getElementById('modalJsonbin').style.display = 'flex';
-  document.getElementById('inputApiKey').value = localStorage.getItem('jsonbin_api_key') || '';
-  document.getElementById('inputBinId').value  = localStorage.getItem('jsonbin_bin_id')  || '';
-  document.getElementById('jsonbinMsg').textContent = '';
-}
-
-async function salvarConfJsonbin() {
-  const apiKey = document.getElementById('inputApiKey').value.trim();
-  const binId  = document.getElementById('inputBinId').value.trim();
-  const msg    = document.getElementById('jsonbinMsg');
-
-  if (!apiKey) { msg.style.color = 'var(--accent2)'; msg.textContent = 'Cole a API Key primeiro.'; return; }
-
-  localStorage.setItem('jsonbin_api_key', apiKey);
-
-  if (binId) {
-    localStorage.setItem('jsonbin_bin_id', binId);
-    msg.style.color = 'var(--success)';
-    msg.textContent = '✓ Configuração salva!';
-    setTimeout(() => { fecharModal(); toast('✓ JSONBin configurado!'); }, 1000);
-  } else {
-    // Cria novo Bin
-    msg.style.color = 'var(--muted)';
-    msg.textContent = '⏳ Criando Bin na nuvem...';
-    try {
-      const res = await fetch(JSONBIN_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': 'catalogo-filamentos' },
-        body: JSON.stringify({ produtos: [] })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const newId = data.metadata.id;
-        localStorage.setItem('jsonbin_bin_id', newId);
-        document.getElementById('inputBinId').value = newId;
-        msg.style.color = 'var(--success)';
-        msg.textContent = `✓ Bin criado! ID: ${newId}`;
-        setTimeout(() => { fecharModal(); toast('✓ JSONBin pronto para uso!'); }, 1500);
-      } else {
-        msg.style.color = 'var(--accent2)';
-        msg.textContent = 'Erro ao criar Bin. Verifique a API Key.';
-      }
-    } catch(e) {
-      msg.style.color = 'var(--accent2)';
-      msg.textContent = 'Sem conexão. Tente novamente.';
-    }
-  }
-}
-
-function removerConfJsonbin() {
-  localStorage.removeItem('jsonbin_api_key');
-  localStorage.removeItem('jsonbin_bin_id');
-  fecharModal();
-  toast('Configuração JSONBin removida.', 'error');
-}
-
-function adminEditarCatalogo() {
-  fecharModal();
-  produtosSessao = produtosCatalogo.map(p => ({ ...p }));
-  produtosSessao.length > 0 ? irParaEtapa(3) : irParaEtapa(1);
-}
-
-function adminNovoUpload() {
-  fecharModal();
-  novoUpload();
-}
-
-function novoUpload() {
-  produtosSessao = [];
-  produtosCatalogo = [];
-  carrinhoCliente = {};
-  coordenadasPorPagina = {};
-  document.getElementById('areaPaginas').innerHTML = '';
-  document.getElementById('countSelecionados').textContent = '0';
-  document.getElementById('btnIrRevisao').disabled = true;
-  document.getElementById('pdfInput').value = '';
-  document.getElementById('uploadStatus').textContent = '';
-  document.getElementById('progressWrap').style.display = 'none';
-  irParaEtapa(1);
-}
-
-// ── ETAPA 1 — Carregamento inicial ──
-window.onload = function() {
-  // Configura upload
-  const uploadArea = document.getElementById('uploadArea');
-  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
-  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-  uploadArea.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') processarPDF(file);
-    else toast('Por favor, selecione um arquivo PDF.', 'error');
-  });
-  document.getElementById('pdfInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) processarPDF(file);
-  });
-
-  // Carrega catálogo
+  // Carrega catalogo da nuvem
   carregarCatalogo();
-};
+}
 
 async function carregarCatalogo() {
+  document.getElementById('loadingOverlay').style.display = 'flex';
   try {
-    mostrarLoadingVitrine(true);
-    const url = `https://gist.githubusercontent.com/crazyvanutt-design/${GIST_ID}/raw/${GIST_FILENAME}?t=${Date.now()}`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
+    var url = 'https://gist.githubusercontent.com/crazyvanutt-design/' + GIST_ID + '/raw/' + GIST_FILENAME + '?t=' + Date.now();
+    var res = await fetch(url);
+    if(res.ok) {
+      var data = await res.json();
       produtosCatalogo = data.produtos || [];
-      if (produtosCatalogo.length > 0) {
-        mostrarLoadingVitrine(false);
+      if(produtosCatalogo.length > 0) {
+        document.getElementById('loadingOverlay').style.display = 'none';
         irParaEtapa(4);
         return;
       }
     }
-  } catch(e) { console.warn('Gist indisponível:', e); }
+  } catch(e) { console.warn('Gist erro:', e); }
 
-  mostrarLoadingVitrine(false);
-
-  // Fallback: localStorage
+  // Fallback localStorage
   try {
-    const salvo = localStorage.getItem('catalogo_fil_v3');
-    if (salvo) {
+    var salvo = localStorage.getItem('catalogo_fil_v3');
+    if(salvo) {
       produtosCatalogo = JSON.parse(salvo);
-      if (produtosCatalogo.length > 0) { irParaEtapa(4); return; }
+      if(produtosCatalogo.length > 0) {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        irParaEtapa(4);
+        return;
+      }
     }
   } catch(e) {}
+
+  document.getElementById('loadingOverlay').style.display = 'none';
 }
 
-function mostrarLoadingVitrine(show) {
-  let el = document.getElementById('loadingOverlay');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'loadingOverlay';
-    el.style.cssText = `position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:1rem;`;
-    el.innerHTML = `<div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite"></div><p style="color:var(--muted);font-size:0.9rem;">Carregando catálogo...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-    document.body.appendChild(el);
+// ── Navegação ──
+function irParaEtapa(n) {
+  if(n===3 && produtosSessao.length===0) { toast('Selecione ao menos um produto!','error'); return; }
+
+  [1,2,3,4].forEach(function(i){
+    document.getElementById('panel'+i).classList.toggle('active', i===n);
+    var el = document.getElementById('step'+i);
+    el.className = i<n ? 'step done' : i===n ? 'step active' : 'step';
+    el.querySelector('.step-circle').textContent = i<n ? '✓' : i;
+    if(i<4) document.getElementById('line'+i).className = i<n ? 'step-line done' : 'step-line';
+  });
+
+  document.getElementById('stepper').style.display = n===4 ? 'none' : 'flex';
+  if(n===3) renderizarRevisao();
+  if(n===4) renderizarVitrine();
+}
+
+// ── Toast ──
+function toast(msg, tipo) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (tipo||'success') + ' show';
+  setTimeout(function(){ t.className='toast'; }, 3000);
+}
+
+// ── Modal Admin ──
+function abrirAdmin() {
+  document.getElementById('modalAdmin').style.display = 'flex';
+  document.getElementById('telaSenha').style.display = 'flex';
+  document.getElementById('telaMenu').style.display = 'none';
+  document.getElementById('inputSenha').value = '';
+  document.getElementById('erroSenha').style.display = 'none';
+  setTimeout(function(){ document.getElementById('inputSenha').focus(); }, 100);
+}
+function fecharAdmin() { document.getElementById('modalAdmin').style.display = 'none'; }
+function verificarSenha() {
+  if(document.getElementById('inputSenha').value === 'admin') {
+    document.getElementById('telaSenha').style.display = 'none';
+    document.getElementById('telaMenu').style.display = 'flex';
+  } else {
+    document.getElementById('erroSenha').style.display = 'block';
   }
-  el.style.display = show ? 'flex' : 'none';
+}
+function adminEditar() {
+  fecharAdmin();
+  produtosSessao = produtosCatalogo.map(function(p){ return Object.assign({},p); });
+  produtosSessao.length>0 ? irParaEtapa(3) : irParaEtapa(1);
+}
+function adminNovo() {
+  fecharAdmin();
+  produtosSessao=[]; produtosCatalogo=[]; carrinhoCliente={}; coordPorPagina={};
+  document.getElementById('areaPaginas').innerHTML='';
+  document.getElementById('countSelecionados').textContent='0';
+  document.getElementById('btnIrRevisao').disabled=true;
+  document.getElementById('pdfInput').value='';
+  document.getElementById('uploadStatus').textContent='';
+  document.getElementById('progressWrap').style.display='none';
+  irParaEtapa(1);
 }
 
-
-
+// ── PDF ──
 async function processarPDF(file) {
-  const status = document.getElementById('uploadStatus');
-  const progressWrap = document.getElementById('progressWrap');
-  const progressBar = document.getElementById('progressBar');
-  
+  var status = document.getElementById('uploadStatus');
+  var progressWrap = document.getElementById('progressWrap');
+  var progressBar  = document.getElementById('progressBar');
+
   status.textContent = 'Lendo arquivo PDF...';
   progressWrap.style.display = 'block';
   progressBar.style.width = '10%';
 
-  const fileReader = new FileReader();
-  fileReader.onload = async function() {
-    const typedarray = new Uint8Array(this.result);
-    progressBar.style.width = '30%';
-
+  var reader = new FileReader();
+  reader.onload = async function() {
     try {
-      const pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
-      const total = pdfDoc.numPages;
-      const container = document.getElementById('areaPaginas');
+      var arr = new Uint8Array(this.result);
+      progressBar.style.width = '30%';
+      var pdf = await pdfjsLib.getDocument({ data: arr }).promise;
+      var total = pdf.numPages;
+      var container = document.getElementById('areaPaginas');
       container.innerHTML = '';
-      coordenadasPorPagina = {};
+      coordPorPagina = {};
       produtosSessao = [];
 
-      for (let i = 1; i <= total; i++) {
-        const pct = 30 + Math.round((i / total) * 65);
-        progressBar.style.width = pct + '%';
-        status.textContent = `Renderizando página ${i} de ${total}...`;
-        await renderizarPagina(pdfDoc, i, container);
+      for(var i=1; i<=total; i++) {
+        progressBar.style.width = (30 + Math.round((i/total)*65)) + '%';
+        status.textContent = 'Renderizando pagina ' + i + ' de ' + total + '...';
+        await renderizarPagina(pdf, i, container);
       }
 
       progressBar.style.width = '100%';
-      status.textContent = `✓ ${total} página(s) prontas!`;
-
-      setTimeout(() => {
-        irParaEtapa(2);
-      }, 700);
-
+      status.textContent = '✓ ' + total + ' pagina(s) prontas!';
+      setTimeout(function(){ irParaEtapa(2); }, 700);
     } catch(e) {
       console.error(e);
       status.textContent = 'Erro ao processar o PDF.';
       progressWrap.style.display = 'none';
-      toast('Erro ao processar o PDF.', 'error');
+      toast('Erro ao processar o PDF.','error');
     }
   };
-  fileReader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(file);
 }
 
-// ── ETAPA 2 — Seleção/Recorte ──
-async function renderizarPagina(pdfDoc, numPag, container) {
-  const page = await pdfDoc.getPage(numPag);
-  const viewport = page.getViewport({ scale: 1.4 });
+async function renderizarPagina(pdf, n, container) {
+  var page = await pdf.getPage(n);
+  var vp = page.getViewport({ scale: 1.4 });
 
-  const bloco = document.createElement('div');
+  var bloco = document.createElement('div');
   bloco.className = 'pagina-bloco';
-  bloco.innerHTML = `
-    <div class="pagina-titulo">Página ${numPag}</div>
-    <div class="pagina-canvas-wrap">
-      <div class="canvas-wrapper" id="wrapper_${numPag}">
-        <canvas id="pdfCanvas_${numPag}"></canvas>
-        <canvas id="cropCanvas_${numPag}" class="crop-canvas"></canvas>
-      </div>
-    </div>
-    <div class="crop-action-bar">
-      <span class="crop-status" id="cropStatus_${numPag}">Arraste o mouse para selecionar um produto</span>
-      <button class="btn btn-primary" id="btnAdd_${numPag}" onclick="adicionarRecorte(${numPag})" disabled>
-        + Adicionar produto
-      </button>
-    </div>
-  `;
+  bloco.innerHTML =
+    '<div class="pagina-titulo">Pagina ' + n + '</div>' +
+    '<div class="pagina-canvas-wrap">' +
+      '<div class="canvas-wrapper" id="wrapper_'+n+'">' +
+        '<canvas id="pdfCanvas_'+n+'"></canvas>' +
+        '<canvas id="cropCanvas_'+n+'" class="crop-canvas"></canvas>' +
+      '</div>' +
+    '</div>' +
+    '<div class="crop-action-bar">' +
+      '<span class="crop-status" id="cropStatus_'+n+'">Arraste o mouse para selecionar um produto</span>' +
+      '<button class="btn btn-primary" id="btnAdd_'+n+'" onclick="adicionarRecorte('+n+')" disabled>+ Adicionar produto</button>' +
+    '</div>';
   container.appendChild(bloco);
 
-  const pCanvas = document.getElementById(`pdfCanvas_${numPag}`);
-  const cCanvas = document.getElementById(`cropCanvas_${numPag}`);
-
-  pCanvas.width = viewport.width;
-  pCanvas.height = viewport.height;
-  cCanvas.width = viewport.width;
-  cCanvas.height = viewport.height;
-
-  await page.render({ canvasContext: pCanvas.getContext('2d'), viewport }).promise;
-  configurarRecorte(cCanvas, numPag);
+  var pc = document.getElementById('pdfCanvas_'+n);
+  var cc = document.getElementById('cropCanvas_'+n);
+  pc.width = vp.width; pc.height = vp.height;
+  cc.width = vp.width; cc.height = vp.height;
+  await page.render({ canvasContext: pc.getContext('2d'), viewport: vp }).promise;
+  configurarRecorte(cc, n);
 }
 
-function configurarRecorte(canvas, numPag) {
-  const ctx = canvas.getContext('2d');
-  let arrastando = false, xi, yi;
+function configurarRecorte(canvas, n) {
+  var ctx = canvas.getContext('2d');
+  var arrastando = false, xi = 0, yi = 0;
 
-  const getPos = (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    if (e.touches) {
-      return {
-        x: (e.touches[0].clientX - rect.left) * scaleX,
-        y: (e.touches[0].clientY - rect.top) * scaleY
-      };
-    }
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
-    };
-  };
+  function getPos(e) {
+    var r = canvas.getBoundingClientRect();
+    var sx = canvas.width/r.width, sy = canvas.height/r.height;
+    if(e.touches) return { x:(e.touches[0].clientX-r.left)*sx, y:(e.touches[0].clientY-r.top)*sy };
+    return { x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy };
+  }
 
-  const start = (e) => {
-    arrastando = true;
-    const p = getPos(e);
-    xi = p.x; yi = p.y;
-    coordenadasPorPagina[numPag] = { startX: xi, startY: yi };
-    document.getElementById(`btnAdd_${numPag}`).disabled = true;
-  };
-
-  const move = (e) => {
-    if (!arrastando) return;
-    e.preventDefault();
-    const p = getPos(e);
-    const w = p.x - xi, h = p.y - yi;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(108,99,255,0.18)';
-    ctx.strokeStyle = '#6c63ff';
-    ctx.lineWidth = 2;
-    ctx.fillRect(xi, yi, w, h);
-    ctx.strokeRect(xi, yi, w, h);
-    coordenadasPorPagina[numPag].width = w;
-    coordenadasPorPagina[numPag].height = h;
-  };
-
-  const end = () => {
-    if (!arrastando) return;
-    arrastando = false;
-    const d = coordenadasPorPagina[numPag];
-    if (d && Math.abs(d.width) > 15 && Math.abs(d.height) > 15) {
-      iniciarOCR(numPag);
-    }
-  };
-
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', move);
-  canvas.addEventListener('mouseup', end);
-  canvas.addEventListener('touchstart', start, { passive: false });
-  canvas.addEventListener('touchmove', move, { passive: false });
-  canvas.addEventListener('touchend', end);
+  canvas.addEventListener('mousedown', function(e){ arrastando=true; var p=getPos(e); xi=p.x; yi=p.y; coordPorPagina[n]={startX:xi,startY:yi}; document.getElementById('btnAdd_'+n).disabled=true; });
+  canvas.addEventListener('mousemove', function(e){
+    if(!arrastando) return;
+    var p=getPos(e), w=p.x-xi, h=p.y-yi;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(108,99,255,0.18)'; ctx.strokeStyle='#6c63ff'; ctx.lineWidth=2;
+    ctx.fillRect(xi,yi,w,h); ctx.strokeRect(xi,yi,w,h);
+    coordPorPagina[n].width=w; coordPorPagina[n].height=h;
+  });
+  canvas.addEventListener('mouseup', function(){ if(!arrastando) return; arrastando=false; var d=coordPorPagina[n]; if(d&&Math.abs(d.width)>15&&Math.abs(d.height)>15) iniciarOCR(n); });
+  canvas.addEventListener('touchstart', function(e){ e.preventDefault(); arrastando=true; var p=getPos(e); xi=p.x; yi=p.y; coordPorPagina[n]={startX:xi,startY:yi}; }, {passive:false});
+  canvas.addEventListener('touchmove',  function(e){ e.preventDefault(); if(!arrastando) return; var p=getPos(e),w=p.x-xi,h=p.y-yi; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(108,99,255,0.18)'; ctx.strokeStyle='#6c63ff'; ctx.lineWidth=2; ctx.fillRect(xi,yi,w,h); ctx.strokeRect(xi,yi,w,h); coordPorPagina[n].width=w; coordPorPagina[n].height=h; }, {passive:false});
+  canvas.addEventListener('touchend',   function(){ if(!arrastando) return; arrastando=false; var d=coordPorPagina[n]; if(d&&Math.abs(d.width)>15&&Math.abs(d.height)>15) iniciarOCR(n); });
 }
 
-async function iniciarOCR(numPag) {
-  const status = document.getElementById(`cropStatus_${numPag}`);
-  const btn = document.getElementById(`btnAdd_${numPag}`);
-  status.className = 'crop-status reading';
-  status.textContent = '🔍 Lendo texto da seleção...';
-  btn.disabled = true;
+async function iniciarOCR(n) {
+  var status = document.getElementById('cropStatus_'+n);
+  var btn    = document.getElementById('btnAdd_'+n);
+  status.className='crop-status reading'; status.textContent='🔍 Lendo texto...'; btn.disabled=true;
 
-  const d = coordenadasPorPagina[numPag];
-  const pCanvas = document.getElementById(`pdfCanvas_${numPag}`);
-  const tmpCanvas = document.createElement('canvas');
-  const w = Math.abs(d.width), h = Math.abs(d.height);
-  const sx = d.width < 0 ? d.startX + d.width : d.startX;
-  const sy = d.height < 0 ? d.startY + d.height : d.startY;
+  var d=coordPorPagina[n];
+  var pc=document.getElementById('pdfCanvas_'+n);
+  var w=Math.abs(d.width), h=Math.abs(d.height);
+  var sx=d.width<0?d.startX+d.width:d.startX, sy=d.height<0?d.startY+d.height:d.startY;
 
-  // Redimensiona para max 300px de largura para economizar espaço
-  const MAX_W = 300;
-  let finalW = w, finalH = h;
-  if (w > MAX_W) { finalH = Math.round(h * MAX_W / w); finalW = MAX_W; }
+  var MAX_W=300, fw=w, fh=h;
+  if(w>MAX_W){ fh=Math.round(h*MAX_W/w); fw=MAX_W; }
 
-  const tmpCanvas = document.createElement('canvas');
-  tmpCanvas.width = finalW;
-  tmpCanvas.height = finalH;
-  tmpCanvas.getContext('2d').drawImage(pCanvas, sx, sy, w, h, 0, 0, finalW, finalH);
+  var tmp=document.createElement('canvas'); tmp.width=fw; tmp.height=fh;
+  tmp.getContext('2d').drawImage(pc,sx,sy,w,h,0,0,fw,fh);
 
   try {
-    const resultado = await Tesseract.recognize(tmpCanvas, 'por');
-    const linhas = resultado.data.text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    coordenadasPorPagina[numPag]._ocrLinhas = linhas;
-    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.35);
-    status.className = 'crop-status ok';
-    status.textContent = `✓ Texto detectado! Clique em "+ Adicionar produto" para incluir.`;
-    btn.disabled = false;
-  } catch(e) {
-    coordenadasPorPagina[numPag]._ocrLinhas = [];
-    coordenadasPorPagina[numPag]._imgBase64 = tmpCanvas.toDataURL('image/jpeg', 0.35);
-    status.className = 'crop-status ok';
-    status.textContent = '⚠ Não leu texto. Clique em "+ Adicionar" assim mesmo.';
-    btn.disabled = false;
-  }
+    var r=await Tesseract.recognize(tmp,'por');
+    var linhas=r.data.text.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+    coordPorPagina[n]._ocr=linhas;
+  } catch(e) { coordPorPagina[n]._ocr=[]; }
+
+  coordPorPagina[n]._img=tmp.toDataURL('image/jpeg',0.35);
+  status.className='crop-status ok'; status.textContent='✓ Pronto! Clique em "+ Adicionar produto".';
+  btn.disabled=false;
 }
 
-function adicionarRecorte(numPag) {
-  const d = coordenadasPorPagina[numPag];
-  if (!d || !d._imgBase64) {
-    toast('Faça uma seleção primeiro.', 'error');
-    return;
-  }
+function adicionarRecorte(n) {
+  var d=coordPorPagina[n];
+  if(!d||!d._img){ toast('Faca uma selecao primeiro.','error'); return; }
 
-  const linhas = d._ocrLinhas || [];
-  const produto = {
-    id: Date.now() + Math.random(),
-    nome: linhas[0] || '',
-    cor: linhas[1] || '',
-    codigo: '',
-    tempBico: '',
-    tempMesa: '',
-    peso: '',
-    imagem: d._imgBase64
-  };
+  var linhas=d._ocr||[];
+  produtosSessao.push({ id:Date.now()+Math.random(), nome:linhas[0]||'', cor:linhas[1]||'', codigo:'', tempBico:'', tempMesa:'', peso:'', imagem:d._img });
 
-  produtosSessao.push(produto);
-
-  // Limpa canvas de recorte
-  const cCanvas = document.getElementById(`cropCanvas_${numPag}`);
-  cCanvas.getContext('2d').clearRect(0, 0, cCanvas.width, cCanvas.height);
-  document.getElementById(`btnAdd_${numPag}`).disabled = true;
-  document.getElementById(`cropStatus_${numPag}`).className = 'crop-status';
-  document.getElementById(`cropStatus_${numPag}`).textContent = `✓ Produto #${produtosSessao.length} adicionado! Selecione outro ou clique em "Revisar".`;
-
-  // Atualiza contador
-  document.getElementById('countSelecionados').textContent = produtosSessao.length;
-  document.getElementById('btnIrRevisao').disabled = false;
-  delete coordenadasPorPagina[numPag]._imgBase64;
-
-  toast(`Produto adicionado! Total: ${produtosSessao.length}`);
+  var cc=document.getElementById('cropCanvas_'+n);
+  cc.getContext('2d').clearRect(0,0,cc.width,cc.height);
+  document.getElementById('btnAdd_'+n).disabled=true;
+  document.getElementById('cropStatus_'+n).className='crop-status';
+  document.getElementById('cropStatus_'+n).textContent='✓ Produto #'+produtosSessao.length+' adicionado!';
+  document.getElementById('countSelecionados').textContent=produtosSessao.length;
+  document.getElementById('btnIrRevisao').disabled=false;
+  delete coordPorPagina[n]._img;
+  toast('Produto adicionado! Total: '+produtosSessao.length);
 }
 
-// ── ETAPA 3 — Revisão ──
+// ── Revisão ──
 function renderizarRevisao() {
-  const grid = document.getElementById('revisaoGrid');
-  grid.innerHTML = '';
-
-  produtosSessao.forEach((p, idx) => {
-    const card = document.createElement('div');
-    card.className = 'revisao-card';
-    card.innerHTML = `
-      <div class="revisao-card-img">
-        <img src="${p.imagem}" alt="produto">
-      </div>
-      <div class="revisao-card-body">
-        <div class="revisao-card-header">
-          <span class="revisao-card-num">Produto #${idx + 1}</span>
-          <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="removerProdutoSessao(${p.id})">✕ Remover</button>
-        </div>
-        <div class="field-group">
-          <label>Nome do Filamento *</label>
-          <input class="field-input" data-id="${p.id}" data-campo="nome" value="${escapar(p.nome)}" placeholder="Ex: PLA Premium">
-        </div>
-        <div class="field-group">
-          <label>Cor *</label>
-          <input class="field-input" data-id="${p.id}" data-campo="cor" value="${escapar(p.cor)}" placeholder="Ex: Azul Transparente">
-        </div>
-        <div class="field-group">
-          <label>Código / Referência</label>
-          <input class="field-input" data-id="${p.id}" data-campo="codigo" value="${escapar(p.codigo)}" placeholder="Ex: FIL-3291">
-        </div>
-        <div class="fields-row">
-          <div class="field-group">
-            <label>Temp. Bico</label>
-            <input class="field-input" data-id="${p.id}" data-campo="tempBico" value="${escapar(p.tempBico)}" placeholder="200°C">
-          </div>
-          <div class="field-group">
-            <label>Temp. Mesa</label>
-            <input class="field-input" data-id="${p.id}" data-campo="tempMesa" value="${escapar(p.tempMesa)}" placeholder="60°C">
-          </div>
-        </div>
-        <div class="field-group">
-          <label>Peso do Carretel</label>
-          <input class="field-input" data-id="${p.id}" data-campo="peso" value="${escapar(p.peso)}" placeholder="Ex: 1 Kg">
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
+  var grid=document.getElementById('revisaoGrid'); grid.innerHTML='';
+  produtosSessao.forEach(function(p,i){
+    var c=document.createElement('div'); c.className='revisao-card';
+    c.innerHTML=
+      '<div class="revisao-card-img"><img src="'+p.imagem+'"></div>'+
+      '<div class="revisao-card-body">'+
+        '<div class="revisao-card-header">'+
+          '<span class="revisao-card-num">Produto #'+(i+1)+'</span>'+
+          '<button class="btn btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="removerProduto('+p.id+')">✕ Remover</button>'+
+        '</div>'+
+        '<div class="field-group"><label>Nome *</label><input class="field-input" data-id="'+p.id+'" data-f="nome" value="'+esc(p.nome)+'" placeholder="Ex: PLA Premium"></div>'+
+        '<div class="field-group"><label>Cor *</label><input class="field-input" data-id="'+p.id+'" data-f="cor" value="'+esc(p.cor)+'" placeholder="Ex: Azul"></div>'+
+        '<div class="field-group"><label>Codigo</label><input class="field-input" data-id="'+p.id+'" data-f="codigo" value="'+esc(p.codigo)+'" placeholder="Ex: FIL-001"></div>'+
+        '<div class="fields-row">'+
+          '<div class="field-group"><label>Temp. Bico</label><input class="field-input" data-id="'+p.id+'" data-f="tempBico" value="'+esc(p.tempBico)+'" placeholder="200C"></div>'+
+          '<div class="field-group"><label>Temp. Mesa</label><input class="field-input" data-id="'+p.id+'" data-f="tempMesa" value="'+esc(p.tempMesa)+'" placeholder="60C"></div>'+
+        '</div>'+
+        '<div class="field-group"><label>Peso</label><input class="field-input" data-id="'+p.id+'" data-f="peso" value="'+esc(p.peso)+'" placeholder="1 Kg"></div>'+
+      '</div>';
+    grid.appendChild(c);
   });
-
-  // Listener único para todos os inputs
-  grid.querySelectorAll('.field-input').forEach(input => {
-    input.addEventListener('input', function() {
-      const id = parseFloat(this.dataset.id);
-      const campo = this.dataset.campo;
-      const prod = produtosSessao.find(p => p.id === id);
-      if (prod) prod[campo] = this.value;
+  grid.querySelectorAll('.field-input').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var id=parseFloat(this.dataset.id), f=this.dataset.f;
+      var p=produtosSessao.find(function(x){return x.id===id;});
+      if(p) p[f]=this.value;
     });
   });
 }
 
-function escapar(str) {
-  return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-}
+function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-function removerProdutoSessao(id) {
-  produtosSessao = produtosSessao.filter(p => p.id !== id);
-  document.getElementById('countSelecionados').textContent = produtosSessao.length;
-  if (produtosSessao.length === 0) document.getElementById('btnIrRevisao').disabled = true;
+function removerProduto(id) {
+  produtosSessao=produtosSessao.filter(function(p){return p.id!==id;});
+  document.getElementById('countSelecionados').textContent=produtosSessao.length;
+  if(produtosSessao.length===0) document.getElementById('btnIrRevisao').disabled=true;
   renderizarRevisao();
   toast('Produto removido.');
 }
 
+// ── Publicar ──
 async function publicarCatalogo() {
-  const invalidos = produtosSessao.filter(p => !p.nome.trim() || !p.cor.trim());
-  if (invalidos.length > 0) {
-    toast(`${invalidos.length} produto(s) sem Nome ou Cor!`, 'error');
-    return;
-  }
+  var invalidos=produtosSessao.filter(function(p){return !p.nome.trim()||!p.cor.trim();});
+  if(invalidos.length>0){ toast(invalidos.length+' produto(s) sem Nome ou Cor!','error'); return; }
 
-  produtosCatalogo = produtosSessao.map(p => ({ ...p }));
+  produtosCatalogo=produtosSessao.map(function(p){return Object.assign({},p);});
   localStorage.setItem('catalogo_fil_v3', JSON.stringify(produtosCatalogo));
 
-  const btn = document.querySelector('.btn-success.btn-lg');
-  btn.textContent = '⏳ Publicando na nuvem...';
-  btn.disabled = true;
+  var btn=document.getElementById('btnPublicar');
+  btn.textContent='⏳ Publicando...'; btn.disabled=true;
+
+  var token=getToken();
+  if(!token){ toast('Token nao configurado. Salvo apenas localmente.','error'); btn.textContent='✓ Salvar e Publicar Catalogo'; btn.disabled=false; irParaEtapa(4); return; }
 
   try {
-    const res = await fetch(`${GIST_API}/${GIST_ID}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `token ${getGistToken()}`
-      },
-      body: JSON.stringify({
-        files: {
-          [GIST_FILENAME]: {
-            content: JSON.stringify({ produtos: produtosCatalogo })
-          }
-        }
-      })
+    var body={};
+    body[GIST_FILENAME]={ content: JSON.stringify({produtos:produtosCatalogo}) };
+    var res=await fetch(GIST_API+'/'+GIST_ID, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','Authorization':'token '+token},
+      body:JSON.stringify({files:body})
     });
-    if (res.ok) {
-      toast('✓ Catálogo publicado na nuvem! Clientes já podem ver.');
-    } else {
-      const err = await res.json();
-      console.error('Gist erro:', err);
-      toast('Erro ao publicar: ' + (err.message || res.status), 'error');
-    }
-  } catch(e) {
-    console.error(e);
-    toast('Sem internet. Salvo apenas localmente.', 'error');
-  }
+    if(res.ok){ toast('✓ Catalogo publicado na nuvem!'); }
+    else{ var e=await res.json(); toast('Erro: '+(e.message||res.status),'error'); }
+  } catch(e){ toast('Sem internet. Salvo localmente.','error'); }
 
-  btn.textContent = '✓ Salvar e Publicar Catálogo';
-  btn.disabled = false;
+  btn.textContent='✓ Salvar e Publicar Catalogo'; btn.disabled=false;
   irParaEtapa(4);
 }
 
-// ── ETAPA 4 — Vitrine ──
+// ── Vitrine ──
 function renderizarVitrine() {
-  const grid = document.getElementById('vitrineGrid');
-  grid.innerHTML = '';
-  carrinhoCliente = {};
-  atualizarBotaoPedido();
+  var grid=document.getElementById('vitrineGrid'); grid.innerHTML='';
+  carrinhoCliente={};
+  atualizarPedido();
 
-  if (produtosCatalogo.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted)">Nenhum produto no catálogo ainda.</p>';
-    return;
-  }
+  if(produtosCatalogo.length===0){ grid.innerHTML='<p style="color:var(--muted)">Nenhum produto ainda.</p>'; return; }
 
-  produtosCatalogo.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'vitrine-card';
-    card.innerHTML = `
-      <div class="vitrine-card-img"><img src="${p.imagem}" alt="${escapar(p.nome)}"></div>
-      <div class="vitrine-card-body">
-        <h3>${escapar(p.nome)}</h3>
-        <ul class="tech-list">
-          <li><span class="lbl">Cor</span><span class="val">${escapar(p.cor)}</span></li>
-          <li><span class="lbl">Código</span><span class="val">${escapar(p.codigo) || '—'}</span></li>
-          <li><span class="lbl">Bico</span><span class="val">${escapar(p.tempBico) || '—'}</span></li>
-          <li><span class="lbl">Mesa</span><span class="val">${escapar(p.tempMesa) || '—'}</span></li>
-          <li><span class="lbl">Peso</span><span class="val">${escapar(p.peso) || '—'}</span></li>
-        </ul>
-        <div class="qtd-row">
-          <label>Quantidade:</label>
-          <input type="number" min="0" value="0" class="input-qtd" oninput="alterarQtd(${p.id}, this.value)">
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
+  produtosCatalogo.forEach(function(p){
+    var c=document.createElement('div'); c.className='vitrine-card';
+    c.innerHTML=
+      '<div class="vitrine-card-img"><img src="'+p.imagem+'" alt="'+esc(p.nome)+'"></div>'+
+      '<div class="vitrine-card-body">'+
+        '<h3>'+esc(p.nome)+'</h3>'+
+        '<ul class="tech-list">'+
+          '<li><span class="lbl">Cor</span><span class="val">'+esc(p.cor)+'</span></li>'+
+          '<li><span class="lbl">Codigo</span><span class="val">'+(esc(p.codigo)||'—')+'</span></li>'+
+          '<li><span class="lbl">Bico</span><span class="val">'+(esc(p.tempBico)||'—')+'</span></li>'+
+          '<li><span class="lbl">Mesa</span><span class="val">'+(esc(p.tempMesa)||'—')+'</span></li>'+
+          '<li><span class="lbl">Peso</span><span class="val">'+(esc(p.peso)||'—')+'</span></li>'+
+        '</ul>'+
+        '<div class="qtd-row"><label>Quantidade:</label><input type="number" min="0" value="0" class="input-qtd" oninput="alterarQtd('+p.id+',this.value)"></div>'+
+      '</div>';
+    grid.appendChild(c);
   });
 }
 
-function alterarQtd(id, val) {
-  const qtd = parseInt(val) || 0;
-  if (qtd > 0) carrinhoCliente[id] = qtd;
-  else delete carrinhoCliente[id];
-  atualizarBotaoPedido();
+function alterarQtd(id,val){
+  var q=parseInt(val)||0;
+  if(q>0) carrinhoCliente[id]=q; else delete carrinhoCliente[id];
+  atualizarPedido();
+}
+function atualizarPedido(){
+  var t=Object.keys(carrinhoCliente).length;
+  document.getElementById('countPedido').textContent=t;
+  document.getElementById('btnGerarPDF').style.display=t>0?'block':'none';
 }
 
-function atualizarBotaoPedido() {
-  const total = Object.keys(carrinhoCliente).length;
-  document.getElementById('countPedido').textContent = total;
-  document.getElementById('btnGerarPDF').style.display = total > 0 ? 'block' : 'none';
-}
+// ── PDF Pedido ──
+function gerarPedidoPDF(){
+  var doc=new window.jspdf.jsPDF();
+  doc.setFont('Helvetica','bold'); doc.setFontSize(20);
+  doc.text('Pedido - Filamentos 3D',20,22);
+  doc.setFontSize(10); doc.setFont('Helvetica','normal');
+  doc.text('Data: '+new Date().toLocaleDateString('pt-BR'),20,30);
 
-function gerarPedidoPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.setFont('Helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.text('Pedido — Catálogo de Filamentos 3D', 20, 22);
-
-  doc.setFontSize(10);
-  doc.setFont('Helvetica', 'normal');
-  doc.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`, 20, 30);
-
-  let y = 42;
-
-  Object.keys(carrinhoCliente).forEach(idStr => {
-    const id = parseFloat(idStr);
-    const qtd = carrinhoCliente[idStr];
-    const p = produtosCatalogo.find(x => x.id === id);
-    if (!p || qtd <= 0) return;
-
-    if (y > 235) { doc.addPage(); y = 20; }
-
-    doc.addImage(p.imagem, 'JPEG', 20, y, 36, 36);
-
-    doc.setFont('Helvetica', 'bold'); doc.setFontSize(13);
-    doc.text(p.nome, 62, y + 7);
-
-    doc.setFont('Helvetica', 'bold'); doc.setFontSize(11);
-    doc.setTextColor(22, 160, 74);
-    doc.text(`QUANTIDADE: ${qtd} un.`, 62, y + 15);
-    doc.setTextColor(0);
-
-    doc.setFont('Helvetica', 'normal'); doc.setFontSize(9);
-    doc.text(`• Cor: ${p.cor}`, 62, y + 22);
-    doc.text(`• Código: ${p.codigo || 'N/A'}`, 62, y + 27);
-    doc.text(`• Bico / Mesa: ${p.tempBico || 'N/A'} / ${p.tempMesa || 'N/A'}`, 62, y + 32);
-    doc.text(`• Peso: ${p.peso || 'N/A'}`, 62, y + 37);
-
-    doc.setDrawColor(200); doc.line(20, y + 40, 190, y + 40);
-    y += 46;
+  var y=42;
+  Object.keys(carrinhoCliente).forEach(function(idStr){
+    var id=parseFloat(idStr), qtd=carrinhoCliente[idStr];
+    var p=produtosCatalogo.find(function(x){return x.id===id;});
+    if(!p||qtd<=0) return;
+    if(y>235){ doc.addPage(); y=20; }
+    doc.addImage(p.imagem,'JPEG',20,y,36,36);
+    doc.setFont('Helvetica','bold'); doc.setFontSize(13);
+    doc.text(p.nome,62,y+7);
+    doc.setTextColor(22,160,74);
+    doc.text('QUANTIDADE: '+qtd+' un.',62,y+15);
+    doc.setTextColor(0); doc.setFont('Helvetica','normal'); doc.setFontSize(9);
+    doc.text('Cor: '+p.cor,62,y+22);
+    doc.text('Codigo: '+(p.codigo||'N/A'),62,y+27);
+    doc.text('Bico/Mesa: '+(p.tempBico||'N/A')+'/'+(p.tempMesa||'N/A'),62,y+32);
+    doc.text('Peso: '+(p.peso||'N/A'),62,y+37);
+    doc.setDrawColor(200); doc.line(20,y+40,190,y+40);
+    y+=46;
   });
-
   doc.save('pedido_filamentos.pdf');
 }
 </script>
