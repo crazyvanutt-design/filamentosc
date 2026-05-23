@@ -612,8 +612,6 @@
       <div id="statusJsonbin" style="padding:10px 14px; border-radius:8px; font-size:0.85rem; font-weight:500; margin-bottom:4px;"></div>
       <button class="btn btn-ghost btn-full" style="justify-content:flex-start; gap:10px;" onclick="adminEditarCatalogo()">✏️ Editar catálogo atual</button>
       <button class="btn btn-ghost btn-full" style="justify-content:flex-start; gap:10px;" onclick="adminNovoUpload()">📄 Carregar novo PDF</button>
-      <hr style="border:none; border-top:1px solid var(--border); margin:4px 0;">
-      <button class="btn btn-ghost btn-full" style="justify-content:flex-start; gap:10px;" onclick="mostrarConfJsonbin()">☁️ Configurar JSONBin (nuvem)</button>
     </div>
 
     <!-- Tela configuração JSONBin -->
@@ -729,20 +727,11 @@ function mostrarMenuAdmin() {
   document.getElementById('modalJsonbin').style.display = 'none';
   document.getElementById('modalMenu').style.display = 'flex';
 
-  const apiKey = localStorage.getItem('jsonbin_api_key');
-  const binId  = localStorage.getItem('jsonbin_bin_id');
   const statusEl = document.getElementById('statusJsonbin');
-  if (apiKey && binId) {
-    statusEl.style.background = 'rgba(34,208,122,0.1)';
-    statusEl.style.border = '1px solid rgba(34,208,122,0.3)';
-    statusEl.style.color = 'var(--success)';
-    statusEl.textContent = '🟢 JSONBin configurado — catálogo salvo na nuvem';
-  } else {
-    statusEl.style.background = 'rgba(255,101,132,0.08)';
-    statusEl.style.border = '1px solid rgba(255,101,132,0.25)';
-    statusEl.style.color = 'var(--accent2)';
-    statusEl.textContent = '🔴 JSONBin não configurado — apenas local';
-  }
+  statusEl.style.background = 'rgba(34,208,122,0.1)';
+  statusEl.style.border = '1px solid rgba(34,208,122,0.3)';
+  statusEl.style.color = 'var(--success)';
+  statusEl.textContent = '🟢 GitHub Gist configurado — catálogo salvo na nuvem';
 }
 
 function mostrarConfJsonbin() {
@@ -1307,4 +1296,4 @@ function gerarPedidoPDF() {
 }
 </script>
 </body>
-</html>
+</html>1
