@@ -652,11 +652,11 @@ let produtosCatalogo = [];
 let carrinhoCliente = {};
 let coordenadasPorPagina = {};
 
-// ── Configuração JSONBin ──
-const JSONBIN_API_KEY    = '$2a$10$Pzap.mBIZt22YaBI5AKLjOo7AlBO/jf.U4mB9ImTCcwrNCOqFILDK';
-const JSONBIN_ACCESS_KEY = '$2a$10$/fNNpe1k4OqTaECL7dlo9eUslCcmQzokPa8597t8nSJglFas5Eenq';
-const JSONBIN_BIN_ID     = '6a10e4c76877513b27b91911';
-const JSONBIN_BASE       = 'https://api.jsonbin.io/v3/b';
+// ── Configuração GitHub Gist ──
+const GIST_ID       = 'f2d55f666a0f3667849887488d5dc225';
+const GIST_FILENAME = 'catalogo.json';
+const GIST_TOKEN    = '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';
+const GIST_API      = 'https://api.github.com/gists';
 
 // ── Utilitários ──
 function toast(msg, tipo = 'success') {
@@ -830,19 +830,18 @@ function novoUpload() {
 
 // ── ETAPA 1 — Carregamento inicial ──
 window.onload = async function() {
-  // Sempre tenta carregar do JSONBin (leitura usa X-Access-Key ou master key)
   try {
     mostrarLoadingVitrine(true);
-    const headers = { 'X-Bin-Meta': 'false', 'X-Access-Key': JSONBIN_ACCESS_KEY };
-
-    const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, { headers });
+    // Lê direto do raw do Gist com cache-busting
+    const url = `https://gist.githubusercontent.com/crazyvanutt-design/${GIST_ID}/raw/${GIST_FILENAME}?t=${Date.now()}`;
+    const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
-      produtosCatalogo = (data.record && data.record.produtos) ? data.record.produtos : [];
+      produtosCatalogo = data.produtos || [];
       mostrarLoadingVitrine(false);
       if (produtosCatalogo.length > 0) { irParaEtapa(4); return; }
     }
-  } catch(e) { console.warn('JSONBin indisponível, usando localStorage.'); }
+  } catch(e) { console.warn('Gist indisponível:', e); }
   mostrarLoadingVitrine(false);
 
   // Fallback: localStorage
@@ -1182,17 +1181,26 @@ async function publicarCatalogo() {
   btn.disabled = true;
 
   try {
-    const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
-      body: JSON.stringify({ produtos: produtosCatalogo })
+    const res = await fetch(`${GIST_API}/${GIST_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `token ${GIST_TOKEN}`
+      },
+      body: JSON.stringify({
+        files: {
+          [GIST_FILENAME]: {
+            content: JSON.stringify({ produtos: produtosCatalogo })
+          }
+        }
+      })
     });
     if (res.ok) {
-      toast('✓ Catálogo publicado na nuvem!');
+      toast('✓ Catálogo publicado na nuvem! Clientes já podem ver.');
     } else {
       const err = await res.json();
-      console.error('JSONBin erro:', err);
-      toast('Erro ao publicar na nuvem: ' + (err.message || res.status), 'error');
+      console.error('Gist erro:', err);
+      toast('Erro ao publicar: ' + (err.message || res.status), 'error');
     }
   } catch(e) {
     console.error(e);
